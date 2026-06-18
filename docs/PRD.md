@@ -7,7 +7,7 @@
 | **Document** | PRD + SoW (v1.0) |
 | **Date** | June 18, 2026 |
 | **Project Type** | Greenfield, full-stack SaaS (portfolio-grade) |
-| **Status** | Phase 0 complete — awaiting Phase 1 |
+| **Status** | Phase 2 (Database) complete — Phase 1 (Auth) next |
 | **Brand Name** | Studioflow (working title) |
 
 ---

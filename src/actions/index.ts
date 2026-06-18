@@ -1,1 +1,7 @@
-// Server Actions will be added in Phase 1+.
+export {
+  signIn,
+  signOut,
+  signUp,
+  requestPasswordReset,
+  updatePassword,
+} from "@/actions/auth";

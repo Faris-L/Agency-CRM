@@ -7,7 +7,7 @@
 | **Document** | Technical Architecture (v1.0) |
 | **Date** | June 18, 2026 |
 | **Related** | [PRD.md](./PRD.md) · [DB.md](./DB.md) |
-| **Current Phase** | Phase 0 complete |
+| **Current Phase** | Phase 0 + Phase 2 (Database) complete — Phase 1 (Auth) next |
 
 ---
 
