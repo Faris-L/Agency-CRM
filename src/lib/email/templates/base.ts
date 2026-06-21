@@ -8,9 +8,7 @@ type EmailLayoutInput = {
   footerNote?: string;
 };
 
-export function getAppUrl() {
-  return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-}
+export { getAppUrl } from "@/lib/env/app-url";
 
 export function wrapEmailLayout({
   title,

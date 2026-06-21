@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { logActivity } from "@/lib/activity/log";
 import { DASHBOARD_HOME } from "@/lib/auth/routes";
+import { getAppUrl } from "@/lib/env/app-url";
 import { getWorkspaceContext, requirePermission } from "@/lib/auth/workspace";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -19,10 +20,6 @@ import type { ActionResult, TeamMember } from "@/types";
 
 function validationError<T = void>(message: string): ActionResult<T> {
   return { success: false, error: message };
-}
-
-function getAppUrl() {
-  return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 }
 
 export async function inviteTeamMember(input: TeamInviteInput): Promise<ActionResult<TeamMember>> {

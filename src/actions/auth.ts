@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getAppUrl } from "@/lib/env/app-url";
 import { getAuthErrorMessage } from "@/lib/auth/errors";
 import { DASHBOARD_HOME } from "@/lib/auth/routes";
 import { createClient } from "@/lib/supabase/server";
@@ -16,10 +17,6 @@ import {
   type UpdatePasswordInput,
 } from "@/lib/validations/auth";
 import type { ActionResult } from "@/types";
-
-function getAppUrl() {
-  return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-}
 
 export async function signIn(input: SignInInput): Promise<ActionResult> {
   const parsed = signInSchema.safeParse(input);

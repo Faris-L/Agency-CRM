@@ -1,3 +1,4 @@
+import { getAppUrl } from "@/lib/env/app-url";
 import { safeSendEmail } from "@/lib/email/helpers";
 import { sendEmail, type SendEmailResult } from "@/lib/email/send";
 import { getInvoiceCreatedEmailContent } from "@/lib/email/templates/invoice-created";
@@ -19,7 +20,7 @@ export async function sendWelcomeEmail({
   to,
   fullName,
 }: SendWelcomeEmailInput): Promise<SendEmailResult> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const appUrl = getAppUrl();
   const { subject, html, text } = getWelcomeEmailContent({ fullName, appUrl });
 
   return sendEmail({ to, subject, html, text });
