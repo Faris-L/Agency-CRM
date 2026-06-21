@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Studioflow — Agency CRM
 
-## Getting Started
+Studioflow is a full-stack SaaS CRM for small agencies and freelancers. It covers clients, projects, tasks, invoices, team collaboration, and dashboard analytics — built with Next.js, Supabase, and Resend.
 
-First, run the development server:
+## Tech stack
+
+- **Frontend:** Next.js 16 (App Router), TypeScript, Tailwind CSS v4, shadcn/ui
+- **Backend:** Server Actions, Supabase (Auth, PostgreSQL, Storage)
+- **Email:** Resend
+- **PDF:** pdf-lib
+- **Deployment:** Vercel + Supabase Cloud
+
+## Prerequisites
+
+- Node.js 20+
+- npm
+- Supabase project (URL, anon/publishable key, service role key)
+- Resend API key with verified sender domain/email
+
+## Local setup
+
+1. Clone the repository and install dependencies:
+
+```bash
+npm install
+```
+
+2. Copy environment variables:
+
+```bash
+cp .env.example .env.local
+```
+
+3. Fill in `.env.local` with your Supabase and Resend credentials.
+
+4. Apply database migrations (Supabase CLI or SQL editor):
+
+```bash
+# From project root, if using Supabase CLI linked to your project:
+supabase db push
+```
+
+Migration files live in `supabase/migrations/`.
+
+5. (Optional) Seed demo data:
+
+```bash
+npm run seed
+```
+
+6. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Yes | Supabase publishable/anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Service role key (server only) |
+| `RESEND_API_KEY` | Yes | Resend API key |
+| `RESEND_FROM_EMAIL` | Yes | Verified sender, e.g. `Studioflow <hello@yourdomain.com>` |
+| `NEXT_PUBLIC_APP_URL` | Yes | App URL for auth redirects and email links |
+| `CRON_SECRET` | Production | Bearer token for `/api/cron/overdue-invoices` |
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Production build |
+| `npm run start` | Run production server |
+| `npm run lint` | ESLint |
+| `npm run seed` | Seed database with demo data |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy to Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Push the repo to GitHub and import the project in Vercel.
+2. Set all environment variables from `.env.example` in the Vercel project settings.
+3. Generate a strong `CRON_SECRET` and add it to Vercel env vars.
+4. Ensure Supabase migrations are applied on your production database.
+5. Deploy — Vercel will run `npm run build`.
 
-## Deploy on Vercel
+The included `vercel.json` schedules a daily cron job at 09:00 UTC to mark overdue invoices and send reminder emails.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Supabase auth redirect URLs
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Add these to your Supabase Auth URL configuration:
+
+- `http://localhost:3000/auth/callback` (local)
+- `https://your-domain.com/auth/callback` (production)
+
+## Documentation
+
+- Product requirements: [`docs/PRD.md`](docs/PRD.md)
+- Architecture: [`docs/Tech.md`](docs/Tech.md)
+- Database schema: [`docs/DB.md`](docs/DB.md)
+
+## Email triggers
+
+| Email | Trigger |
+|-------|---------|
+| Welcome | After email confirmation / first login |
+| Task assigned | Task assignee set or changed |
+| Project completed | Project status → Completed |
+| Invoice created | New invoice created (sent to client) |
+| Invoice overdue | Due date passed or status → Overdue |
+
+## License
+
+Private — portfolio / commercial SaaS demo project.

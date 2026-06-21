@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
-import { DashboardHeader } from "@/components/layout/dashboard-header";
+import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { getAuthUser, getProfile } from "@/lib/auth/session";
 import { DASHBOARD_HOME } from "@/lib/auth/routes";
+import { ROLE_PERMISSIONS, type Role } from "@/lib/constants/roles";
 
 export default async function DashboardLayout({
   children,
@@ -15,16 +16,23 @@ export default async function DashboardLayout({
   }
 
   const profile = await getProfile(user.id);
+  const role = (profile?.role ?? "Member") as Role;
+  const permissions = ROLE_PERMISSIONS[role];
 
   return (
-    <div className="flex min-h-full flex-col">
-      <DashboardHeader
-        fullName={profile?.full_name}
-        email={profile?.email ?? user.email}
-      />
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
-        {children}
-      </main>
-    </div>
+    <DashboardShell
+      fullName={profile?.full_name}
+      email={profile?.email ?? user.email}
+      permissions={{
+        manageClients: permissions.manageClients,
+        manageProjects: permissions.manageProjects,
+        manageInvoices: permissions.manageInvoices,
+        manageTeam: permissions.manageTeam,
+        manageBilling: permissions.manageBilling,
+        manageSettings: permissions.manageSettings,
+      }}
+    >
+      {children}
+    </DashboardShell>
   );
 }

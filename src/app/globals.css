@@ -157,4 +157,8 @@
   .glass-nav {
     @apply border-b border-border/50 bg-background/70 backdrop-blur-xl;
   }
+
+  .glass-sidebar {
+    @apply border-r border-border/50 bg-background/70 backdrop-blur-xl;
+  }
 }

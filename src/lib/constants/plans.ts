@@ -39,3 +39,18 @@ export const PLAN_PRICES: Record<Plan, number> = {
   Pro: 29,
   Agency: 79,
 };
+
+export function getPlanLimitMessage(plan: Plan, resource: "clients" | "projects"): string {
+  const limits = PLAN_LIMITS[plan];
+  const max = resource === "clients" ? limits.maxClients : limits.maxProjects;
+
+  if (max === null) return "";
+
+  const label = resource === "clients" ? "clients" : "projects";
+  return `Your ${plan} plan allows up to ${max} ${label}. Upgrade to Pro for unlimited ${label}.`;
+}
+
+export function getTeamUpsellMessage(plan: Plan): string {
+  if (PLAN_LIMITS[plan].teamMembers) return "";
+  return "Team members are available on the Agency plan. Upgrade to invite managers and members to your workspace.";
+}
