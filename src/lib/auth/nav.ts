@@ -66,6 +66,10 @@ export function getPageTitle(
   pathname: string,
   permissions: NavPermissions,
 ): string {
+  if (pathname === "/profile") {
+    return "Profile";
+  }
+
   const items = [
     ...getVisibleNavItems(permissions, "sidebar"),
     ...getVisibleNavItems(permissions, "user-menu"),

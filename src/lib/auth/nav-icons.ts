@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Settings,
   TrendingUp,
+  User,
   Users,
   UsersRound,
   type LucideIcon,
@@ -21,6 +22,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/invoices": FileText,
   "/revenue": TrendingUp,
   "/team": UsersRound,
+  "/profile": User,
   "/billing": CreditCard,
   "/settings": Settings,
 };

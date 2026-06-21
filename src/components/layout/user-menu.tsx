@@ -3,13 +3,14 @@
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useState } from "react";
-import { Loader2, LogOut, Moon, Sun } from "lucide-react";
+import { Loader2, LogOut, Moon, Sun, User } from "lucide-react";
 import { signOut } from "@/actions/auth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -72,17 +73,27 @@ export function UserMenu({ fullName, email, permissions }: UserMenuProps) {
         }
       />
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col gap-0.5">
-            <span className="font-medium">{displayName}</span>
-            {email ? (
-              <span className="truncate text-xs text-muted-foreground">
-                {email}
-              </span>
-            ) : null}
-          </div>
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="font-normal">
+            <button
+              type="button"
+              className="flex w-full flex-col gap-0.5 rounded-md text-left outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              onClick={() => router.push("/profile")}
+            >
+              <span className="font-medium">{displayName}</span>
+              {email ? (
+                <span className="truncate text-xs text-muted-foreground">
+                  {email}
+                </span>
+              ) : null}
+            </button>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => router.push("/profile")}>
+          <User />
+          Profile
+        </DropdownMenuItem>
         {userMenuItems.map((item) => {
           const Icon = getNavIcon(item.href);
           return (

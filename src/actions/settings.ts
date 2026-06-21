@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getWorkspaceContext, requirePermission } from "@/lib/auth/workspace";
+import { getWorkspaceContext } from "@/lib/auth/workspace";
 import { createClient } from "@/lib/supabase/server";
 import {
   ALLOWED_AVATAR_TYPES,
@@ -43,9 +43,6 @@ export async function updateProfileSettings(
   const ctx = await getWorkspaceContext();
   if (!ctx) return validationError("You must be signed in.");
 
-  const denied = requirePermission(ctx, "manageSettings");
-  if (denied) return denied;
-
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("profiles")
@@ -58,6 +55,7 @@ export async function updateProfileSettings(
     return validationError(error?.message ?? "Failed to update profile.");
   }
 
+  revalidatePath("/profile");
   revalidatePath("/settings");
   revalidatePath("/", "layout");
   return { success: true, data };
@@ -80,9 +78,6 @@ export async function uploadAvatar(formData: FormData): Promise<ActionResult<Pro
 
   const ctx = await getWorkspaceContext();
   if (!ctx) return validationError("You must be signed in.");
-
-  const denied = requirePermission(ctx, "manageSettings");
-  if (denied) return denied;
 
   const supabase = await createClient();
   const extension = getAvatarExtension(file.type);
@@ -112,6 +107,7 @@ export async function uploadAvatar(formData: FormData): Promise<ActionResult<Pro
     return validationError(error?.message ?? "Failed to save avatar.");
   }
 
+  revalidatePath("/profile");
   revalidatePath("/settings");
   revalidatePath("/", "layout");
   return { success: true, data };
@@ -120,9 +116,6 @@ export async function uploadAvatar(formData: FormData): Promise<ActionResult<Pro
 export async function removeAvatar(): Promise<ActionResult<Profile>> {
   const ctx = await getWorkspaceContext();
   if (!ctx) return validationError("You must be signed in.");
-
-  const denied = requirePermission(ctx, "manageSettings");
-  if (denied) return denied;
 
   const supabase = await createClient();
 
@@ -146,6 +139,7 @@ export async function removeAvatar(): Promise<ActionResult<Profile>> {
     return validationError(error?.message ?? "Failed to remove avatar.");
   }
 
+  revalidatePath("/profile");
   revalidatePath("/settings");
   revalidatePath("/", "layout");
   return { success: true, data };

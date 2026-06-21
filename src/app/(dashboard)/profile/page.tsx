@@ -1,19 +1,18 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { redirectIfMissingPermission } from "@/lib/auth/page-guards";
+import { ProfileView } from "@/components/profile/profile-view";
 import { getWorkspaceContext } from "@/lib/auth/workspace";
 
 export const metadata: Metadata = {
-  title: "Settings",
+  title: "Profile",
 };
 
-export default async function SettingsPage() {
+export default async function ProfilePage() {
   const ctx = await getWorkspaceContext();
 
   if (!ctx) {
-    redirect("/login");
+    redirect("/login?redirect=" + encodeURIComponent("/profile"));
   }
 
-  redirectIfMissingPermission(ctx, "manageSettings");
-  redirect("/profile");
+  return <ProfileView profile={ctx.profile} />;
 }
