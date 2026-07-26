@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getAuthErrorMessage } from "@/lib/auth/errors";
 import { DASHBOARD_HOME } from "@/lib/auth/routes";
-import { isEmailConfirmationSkipped } from "@/lib/env/auth-config";
+import { canAutoConfirmSignup } from "@/lib/env/auth-config";
 import { getAppUrl } from "@/lib/env/app-url";
 import { sendWelcomeEmail } from "@/lib/email";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -42,9 +42,7 @@ export async function signIn(input: SignInInput): Promise<ActionResult> {
   return { success: true };
 }
 
-async function signUpWithAutoConfirm(
-  input: SignUpInput,
-): Promise<ActionResult<{ needsEmailConfirmation: boolean }>> {
+async function signUpWithAutoConfirm(input: SignUpInput): Promise<ActionResult> {
   const admin = createAdminClient();
 
   const { data, error } = await admin.auth.admin.createUser({
@@ -82,7 +80,7 @@ async function signUpWithAutoConfirm(
   }
 
   revalidatePath("/", "layout");
-  return { success: true, data: { needsEmailConfirmation: false } };
+  return { success: true };
 }
 
 export async function signUp(
@@ -94,8 +92,12 @@ export async function signUp(
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
   }
 
-  if (isEmailConfirmationSkipped()) {
-    return signUpWithAutoConfirm(parsed.data);
+  if (canAutoConfirmSignup()) {
+    const result = await signUpWithAutoConfirm(parsed.data);
+    if (!result.success) {
+      return result;
+    }
+    redirect(DASHBOARD_HOME);
   }
 
   const appUrl = getAppUrl();
@@ -114,9 +116,14 @@ export async function signUp(
     return { success: false, error: getAuthErrorMessage(error.message) };
   }
 
+  if (data.session) {
+    revalidatePath("/", "layout");
+    redirect(DASHBOARD_HOME);
+  }
+
   return {
     success: true,
-    data: { needsEmailConfirmation: !data.session },
+    data: { needsEmailConfirmation: true },
   };
 }
 

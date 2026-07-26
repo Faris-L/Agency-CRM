@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -15,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { signUpSchema, type SignUpInput } from "@/lib/validations/auth";
 
 export function RegisterForm() {
-  const router = useRouter();
   const [emailSent, setEmailSent] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
 
@@ -45,12 +43,7 @@ export function RegisterForm() {
       setRegisteredEmail(values.email);
       setEmailSent(true);
       toast.success("Check your email to confirm your account.");
-      return;
     }
-
-    toast.success("Account created! Welcome to Studioflow.");
-    router.push("/dashboard");
-    router.refresh();
   }
 
   if (emailSent) {
