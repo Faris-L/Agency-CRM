@@ -14,6 +14,7 @@ export function isPublicPath(pathname: string): boolean {
   return (
     PUBLIC_PATHS.includes(pathname as (typeof PUBLIC_PATHS)[number]) ||
     isAuthRoute(pathname) ||
-    pathname.startsWith("/auth/")
+    pathname.startsWith("/auth/") ||
+    pathname === "/update-password"
   );
 }

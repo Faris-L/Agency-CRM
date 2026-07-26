@@ -8,11 +8,34 @@ import {
 import { getSupabaseKey, getSupabaseUrl } from "@/lib/supabase/env";
 import type { Database } from "@/types/database";
 
+function hasSupabaseAuthCookie(request: NextRequest): boolean {
+  return request.cookies.getAll().some((cookie) => {
+    return cookie.name.startsWith("sb-") && cookie.name.includes("-auth-token");
+  });
+}
+
+function redirectToLogin(request: NextRequest, pathname: string) {
+  const redirectUrl = request.nextUrl.clone();
+  redirectUrl.pathname = "/login";
+  redirectUrl.searchParams.set("redirect", pathname);
+  return NextResponse.redirect(redirectUrl);
+}
+
 export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   if (pathname.startsWith("/api")) {
     return NextResponse.next();
+  }
+
+  const hasSessionCookie = hasSupabaseAuthCookie(request);
+
+  if (isPublicPath(pathname)) {
+    if (!hasSessionCookie || !isAuthRoute(pathname)) {
+      return NextResponse.next();
+    }
+  } else if (!hasSessionCookie) {
+    return redirectToLogin(request, pathname);
   }
 
   let supabaseResponse = NextResponse.next({
@@ -47,10 +70,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (!user && !isPublicPath(pathname)) {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/login";
-    redirectUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(redirectUrl);
+    return redirectToLogin(request, pathname);
   }
 
   if (user && isAuthRoute(pathname)) {
